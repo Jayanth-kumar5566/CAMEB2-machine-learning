@@ -47,19 +47,18 @@ import importlib
 import DNN_models
 import exception_handle
 
-#Reading the data
-X=pd.read_csv("data/ilr_data.csv", index_col=0)
-Y=pd.read_csv("data/labels_class.csv",index_col=0)
+#Reading the data - training
+X_train=pd.read_csv("data/train.csv", index_col=0)
+y_train=pd.read_csv("data/train_labels.csv",index_col=0)
 
+#Reading the data - testing
+X_test=pd.read_csv("data/test.csv", index_col=0)
+y_test=pd.read_csv("data/test_labels.csv",index_col=0)
 
-#Scaling the dataset
-scaler=StandardScaler()
-X=scaler.fit_transform(X) 
+#Scaling the dataset - Necessary? no different units
 
-#Test train splitting
-X_train, X_test, y_train, y_test = train_test_split(X, Y.values, test_size=0.2, stratify=Y.values)
-#X_train, X_test, y_train, y_test = train_test_split(X, Y.values, test_size=0.2)
-
+#scaler=StandardScaler()
+#X=scaler.fit_transform(X) 
 
 #Principal Component Analysis
 def pca(X_train, X_test,ratio=0.95,ncomp="Null"): #manuplate the ratio to choose componenets
@@ -90,7 +89,7 @@ def pca(X_train, X_test,ratio=0.95,ncomp="Null"): #manuplate the ratio to choose
     # applying the eigenvectors to the whole training and the test set.
     return(X_train,X_test)
     
-#X_train_d,X_test_d=pca(X_train, X_test)
+X_train_d,X_test_d=pca(X_train, X_test)
 
 print("PCA done")
 
@@ -198,7 +197,7 @@ print("Balanced Accuracy", balanced_accuracy_score(y_test,y_pred))
 #Doesn't learn at-all Class imbalance returns class 1 always
 #so, random forest (with PCA) is not good factor this. Probably, needs boosting
 
-
+'''
 
 # Anamoly detection -- One SVM
 #hyper_parameters = [{'kernel': ['linear'],'nu':np.arange(0.1,0.4,0.01)},
@@ -227,6 +226,7 @@ for i in np.arange(0.3,1,0.1):
 
     print("Max LOOCV accuracy is")
     res_dic[i]=(df.loc[:,"mean_test_Acc"].max())
+'''
 
 '''
 max_index=df.loc[:,"mean_test_Acc"].idxmax()
