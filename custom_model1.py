@@ -50,10 +50,12 @@ import exception_handle
 #Reading the data - training
 X_train=pd.read_csv("data/train.csv", index_col=0)
 y_train=pd.read_csv("data/train_labels.csv",index_col=0)
+y_train=y_train["ExacerbatorState"]
 
 #Reading the data - testing
 X_test=pd.read_csv("data/test.csv", index_col=0)
 y_test=pd.read_csv("data/test_labels.csv",index_col=0)
+y_test=y_test["ExacerbatorState"]
 
 #Scaling the dataset - Necessary? no different units
 
@@ -89,7 +91,7 @@ def pca(X_train, X_test,ratio=0.95,ncomp="Null"): #manuplate the ratio to choose
     # applying the eigenvectors to the whole training and the test set.
     return(X_train,X_test)
     
-X_train_d,X_test_d=pca(X_train, X_test)
+X_train_d,X_test_d=pca(X_train, X_test,ratio=0.75)
 
 print("PCA done")
 
@@ -104,47 +106,48 @@ def rp(X_train,X_test):
     return(X_train,X_test)    
 
 
-'''
-#Random forest with leave one out CV
-hyper_parameters = [{'n_estimators': [s for s in range(1, 500, 50)],
+def random_forest(X_train_d,X_test_d,y_train,y_test):
+    
+    #Random forest with leave one out CV
+    hyper_parameters = [{'n_estimators': [s for s in range(5, X_train_d.shape[0], 100)],
                         'max_features': ['sqrt'],
                         'max_samples':[s for s in np.arange(0.01,1,0.2)],
                         'max_depth':[None],
                         'min_samples_split':[2]
                         }, ]
 
-scoring={"balanced Acc":make_scorer(balanced_accuracy_score),"mathews corr ceoff":make_scorer(matthews_corrcoef),"Acc":make_scorer(accuracy_score)}
+    scoring={"Acc":make_scorer(accuracy_score)}
 
-clf = GridSearchCV(RandomForestClassifier(n_jobs=-1, class_weight="balanced_subsample",bootstrap=True), hyper_parameters, cv=LeaveOneOut(), scoring=scoring, n_jobs=-1, verbose=1,refit="Acc",return_train_score=True)
-clf.fit(X_train_d, y_train.ravel())                         
+    clf = GridSearchCV(RandomForestClassifier(n_jobs=-1, class_weight="balanced_subsample",bootstrap=True), hyper_parameters, cv=LeaveOneOut(), scoring=scoring, n_jobs=-1, verbose=1,refit="Acc",return_train_score=True)
+    clf.fit(X_train_d, y_train)                         
 
-y_pred=clf.predict(X_test_d)
-print(confusion_matrix(y_test,y_pred))
+    y_pred=clf.predict(X_test_d)
+    print(confusion_matrix(y_test,y_pred))
 
 
-results = clf.cv_results_
-df=pd.DataFrame(results)
-df.to_csv("Cross_validation_log.csv")
+    results = clf.cv_results_
+    df=pd.DataFrame(results)
+    df.to_csv("Cross_validation_log.csv")
 
-yaxis=["mean_train_mathews corr ceoff","mean_train_balanced Acc","mean_test_mathews corr ceoff","mean_test_balanced Acc","mean_test_Acc","mean_train_Acc"]
-xaxis=["param_n_estimators","param_max_samples"]
+    yaxis=["mean_test_Acc","mean_train_Acc"]
+    xaxis=["param_n_estimators","param_max_samples"]
 
-for x in xaxis:
-    plt.clf()
-    for y in yaxis:
-        plt.plot(df[x],df[y],'-o')
-    plt.legend()
-    plt.savefig("metrics_plot"+str(x))
-    
-print("Max LOOCV accuracy is")
-print(df.loc[:,"mean_test_Acc"].max())
-    
-max_index=df.loc[:,"mean_test_Acc"].idxmax()
+    for x in xaxis:
+        plt.clf()
+        for y in yaxis:
+            plt.plot(df[x],df[y],'-o')
+        plt.legend()
+        plt.savefig("metrics_plot"+str(x)+".png")
+        
+    print("Max LOOCV accuracy is")
+    print(df.loc[:,"mean_test_Acc"].max())
+        
+    max_index=df.loc[:,"mean_test_Acc"].idxmax()
 
-print(df.loc[max_index,:]["param_n_estimators"])
-print(df.loc[max_index,:]["param_max_samples"])
-'''
+    print(df.loc[max_index,:]["param_n_estimators"])
+    print(df.loc[max_index,:]["param_max_samples"])
 
+random_forest(X_train_d,X_test_d,y_train,y_test)
 
 '''
 X_train_d,X_test_d=pca(X_train,X_test,ratio=0.8)
