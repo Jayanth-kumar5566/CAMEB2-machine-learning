@@ -109,16 +109,16 @@ def rp(X_train,X_test):
 def random_forest(X_train_d,X_test_d,y_train,y_test):
     
     #Random forest with leave one out CV
-    hyper_parameters = [{'n_estimators': [s for s in range(5, X_train_d.shape[0], 100)],
-                        'max_features': ['sqrt'],
-                        'max_samples':[s for s in np.arange(0.01,1,0.2)],
-                        'max_depth':[None],
+    hyper_parameters = [{'n_estimators': [s for s in range(5, 200, 10)],
+    'criterion':['gini'],
+                        'max_features': ['auto'],
+                        'max_depth':[s for s in range(2, 20, 2)],
                         'min_samples_split':[2]
                         }, ]
 
     scoring={"Acc":make_scorer(accuracy_score)}
 
-    clf = GridSearchCV(RandomForestClassifier(n_jobs=-1, class_weight="balanced_subsample",bootstrap=True), hyper_parameters, cv=LeaveOneOut(), scoring=scoring, n_jobs=-1, verbose=1,refit="Acc",return_train_score=True)
+    clf = GridSearchCV(RandomForestClassifier(n_jobs=-1, class_weight="balanced",bootstrap=True), hyper_parameters, cv=LeaveOneOut(), scoring=scoring, n_jobs=-1, verbose=1,refit="Acc",return_train_score=True)
     clf.fit(X_train_d, y_train)                         
 
     y_pred=clf.predict(X_test_d)
@@ -130,7 +130,7 @@ def random_forest(X_train_d,X_test_d,y_train,y_test):
     df.to_csv("Cross_validation_log.csv")
 
     yaxis=["mean_test_Acc","mean_train_Acc"]
-    xaxis=["param_n_estimators","param_max_samples"]
+    xaxis=["param_n_estimators","param_max_depth"]
 
     for x in xaxis:
         plt.clf()
@@ -144,8 +144,9 @@ def random_forest(X_train_d,X_test_d,y_train,y_test):
         
     max_index=df.loc[:,"mean_test_Acc"].idxmax()
 
-    print(df.loc[max_index,:]["param_n_estimators"])
-    print(df.loc[max_index,:]["param_max_samples"])
+    print(["param_n_estimators",df.loc[max_index,:]["param_n_estimators"]])
+    print(["param_max_depth",df.loc[max_index,:]["param_max_depth"]])
+    return(df)
 
 random_forest(X_train_d,X_test_d,y_train,y_test)
 
