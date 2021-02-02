@@ -28,6 +28,7 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
 
 # importing keras
 import keras
@@ -91,10 +92,6 @@ def pca(X_train, X_test,ratio=0.95,ncomp="Null"): #manuplate the ratio to choose
     # applying the eigenvectors to the whole training and the test set.
     return(X_train,X_test)
     
-X_train_d,X_test_d=pca(X_train, X_test,ratio=0.75)
-
-print("PCA done")
-
 #Gausian Random Projection
 def rp(X_train,X_test):
     # GRP
@@ -109,10 +106,10 @@ def rp(X_train,X_test):
 def random_forest(X_train_d,X_test_d,y_train,y_test):
     
     #Random forest with leave one out CV
-    hyper_parameters = [{'n_estimators': [s for s in range(5, 200, 10)],
+    hyper_parameters = [{'n_estimators': [s for s in range(3, 100, 10)],
     'criterion':['gini'],
                         'max_features': ['auto'],
-                        'max_depth':[s for s in range(2, 20, 2)],
+                        'max_depth':[s for s in range(2, 15, 2)],
                         'min_samples_split':[2]
                         }, ]
 
@@ -148,7 +145,53 @@ def random_forest(X_train_d,X_test_d,y_train,y_test):
     print(["param_max_depth",df.loc[max_index,:]["param_max_depth"]])
     return(df)
 
-random_forest(X_train_d,X_test_d,y_train,y_test)
+
+# Feature-selection LEFSe
+f=pd.read_csv("./data/feature_sel_LEFSe/selected_features.csv",index_col=0).index
+
+#Indexes_reduce
+df=pd.read_csv("./data/feature_sel_LEFSe/to_lefse.csv",sep="\t",index_col=0)
+
+y=df["ExacerbatorState"]
+
+X_train=pd.merge(X_train,y,left_index=True,right_index=True,how="inner")
+X_test=pd.merge(X_test,y,left_index=True,right_index=True,how="inner")
+
+y_train=X_train["ExacerbatorState"]
+y_test=X_test["ExacerbatorState"]
+
+X_train_d=X_train.loc[:,f]
+X_test_d=X_test.loc[:,f]
+
+hyper_parameters = [{'n_estimators': [s for s in range(60, 85, 5)],'criterion':['gini'],
+                        'max_features': ['auto'],
+                        'max_depth':[s for s in range(3, 5, 1)],
+                        'min_samples_split':[2]
+                        }, ]
+scoring={"Acc":make_scorer(accuracy_score)}
+
+clf = GridSearchCV(RandomForestClassifier(n_jobs=-1, class_weight="balanced",bootstrap=True), hyper_parameters, cv=LeaveOneOut(), scoring=scoring, n_jobs=-1, verbose=1,refit="Acc",return_train_score=True)
+
+clf.fit(X_train_d, y_train)                         
+
+results = clf.cv_results_
+df=pd.DataFrame(results)
+print("Mean test accuracy",df["mean_test_Acc"])
+
+rf=RandomForestClassifier(n_jobs=-1, n_estimators=80,min_samples_split=2,max_depth=4,class_weight="balanced",bootstrap=True)
+rf.fit(X_train_d, y_train)                         
+y_pred=rf.predict(X_test_d)
+print(confusion_matrix(y_test,y_pred))
+
+
+#Logistic-regression
+
+lr = LogisticRegression(random_state=0,penalty="l1",class_weight="balanced",n_jobs=-1)
+lr.fit(X_train_d,y_train)
+print("Training Acc",lr.score(X_train_d,y_train))
+print("Testing Acc",lr.score(X_test_d,y_test))
+
+#random_forest(X_train_d,X_test_d,y_train,y_test)
 
 '''
 X_train_d,X_test_d=pca(X_train,X_test,ratio=0.8)
