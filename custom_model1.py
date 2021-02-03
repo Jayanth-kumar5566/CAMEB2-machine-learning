@@ -183,7 +183,7 @@ def score(x,y=y_train):
 Acuracy_cbalanced=df_test.apply(score,axis=1)
 print("Class balanced Accuracy",Acuracy_cbalanced)
 
-rf=RandomForestClassifier(n_jobs=-1, n_estimators=25,min_samples_split=2,max_depth=2,class_weight="balanced",bootstrap=True)
+rf=RandomForestClassifier(n_jobs=-1, n_estimators=15,min_samples_split=2,max_depth=3,class_weight="balanced",bootstrap=True)
 rf.fit(X_train_d, y_train)                         
 y_pred=rf.predict(X_test_d)
 print(confusion_matrix(y_test,y_pred))

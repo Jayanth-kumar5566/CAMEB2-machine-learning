@@ -18,7 +18,7 @@ train=df_norm.reindex(y1.index)
 train.to_csv("./train.csv")
 
 y1=y1["ExacerbatorState"]
-y1=y1.replace({"NonEx":0,"Exacerbator":0,"FreqEx":1})
+y1=y1.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
 y1.to_csv("./train_labels.csv",header=True)
 
 #testing
@@ -26,6 +26,6 @@ test=df_norm.reindex(y2.index)
 test.to_csv("./test.csv")
 
 y2=y2["ExacerbatorState"]
-y2=y2.replace({"NonEx":0,"Exacerbator":0,"FreqEx":1})
+y2=y2.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
 y2.to_csv("./test_labels.csv",header=True)
 
