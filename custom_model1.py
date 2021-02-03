@@ -149,36 +149,12 @@ def random_forest(X_train_d,X_test_d,y_train,y_test):
 # Feature-selection LEFSe
 f=pd.read_csv("./data/feature_sel_LEFSe/selected_features.csv",index_col=0).index
 
-#Indexes_reduce
-df=pd.read_csv("./data/feature_sel_LEFSe/to_lefse.csv",sep="\t",index_col=0)
-df.columns=[i.replace("_"," ") for i in df.columns]
-
-y=df["ExacerbatorState"]
-
-X_train=df.reindex(X_train.index)
-X_test=df.reindex(X_test.index)
-
-X_train=X_train.dropna()
-X_test=X_test.dropna()
-
-y_train=X_train["ExacerbatorState"]
-y_test=X_test["ExacerbatorState"]
-
 X_train_d=X_train.loc[:,f]
 X_test_d=X_test.loc[:,f]
 
-#With or without subcompostional normalisation
-#X_train_d=X_train_d.div(X_train_d.sum(axis=1),axis=0)*100
-#X_test_d=X_test_d.div(X_test_d.sum(axis=1),axis=0)*100
-
-#With or without CLR subcompositional normalisation
-from skbio.stats.composition import clr
-X_train_d=clr(X_train_d+1)
-X_test_d=clr(X_test_d+1)
-
-hyper_parameters = [{'n_estimators': [s for s in range(50, 80, 5)],'criterion':['gini'],
+hyper_parameters = [{'n_estimators': [s for s in range(5, 100, 10)],'criterion':['gini'],
                         'max_features': ['auto'],
-                        'max_depth':[3,4,5,6,7,8,9],
+                        'max_depth':[s for s in range(2, 8, 1)],
                         'min_samples_split':[2]
                         }, ]
 scoring={"Acc":make_scorer(accuracy_score)}
@@ -191,7 +167,23 @@ results = clf.cv_results_
 df=pd.DataFrame(results)
 print("Mean test accuracy",df["mean_test_Acc"])
 
-rf=RandomForestClassifier(n_jobs=-1, n_estimators=60,min_samples_split=2,max_depth=6,class_weight="balanced",bootstrap=True)
+df_test=df.filter(regex=("split.*_test_Acc"))
+
+def score(x,y=y_train):
+	'''
+	x is the cv result row
+	y is y_train
+	'''
+	table=pd.crosstab(x.values,y.values,rownames=["CV accuracy"],colnames=["Groups"])
+	table_norm=table.div(table.sum(axis=0),axis=1)
+	balanced_acc=table_norm.iloc[1,:].mean()
+	return(balanced_acc)
+
+
+Acuracy_cbalanced=df_test.apply(score,axis=1)
+print("Class balanced Accuracy",Acuracy_cbalanced)
+
+rf=RandomForestClassifier(n_jobs=-1, n_estimators=25,min_samples_split=2,max_depth=2,class_weight="balanced",bootstrap=True)
 rf.fit(X_train_d, y_train)                         
 y_pred=rf.predict(X_test_d)
 print(confusion_matrix(y_test,y_pred))
