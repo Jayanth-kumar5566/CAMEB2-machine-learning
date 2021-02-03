@@ -151,11 +151,15 @@ f=pd.read_csv("./data/feature_sel_LEFSe/selected_features.csv",index_col=0).inde
 
 #Indexes_reduce
 df=pd.read_csv("./data/feature_sel_LEFSe/to_lefse.csv",sep="\t",index_col=0)
+df.columns=[i.replace("_"," ") for i in df.columns]
 
 y=df["ExacerbatorState"]
 
-X_train=pd.merge(X_train,y,left_index=True,right_index=True,how="inner")
-X_test=pd.merge(X_test,y,left_index=True,right_index=True,how="inner")
+X_train=df.reindex(X_train.index)
+X_test=df.reindex(X_test.index)
+
+X_train=X_train.dropna()
+X_test=X_test.dropna()
 
 y_train=X_train["ExacerbatorState"]
 y_test=X_test["ExacerbatorState"]
@@ -163,9 +167,18 @@ y_test=X_test["ExacerbatorState"]
 X_train_d=X_train.loc[:,f]
 X_test_d=X_test.loc[:,f]
 
-hyper_parameters = [{'n_estimators': [s for s in range(60, 85, 5)],'criterion':['gini'],
+#With or without subcompostional normalisation
+#X_train_d=X_train_d.div(X_train_d.sum(axis=1),axis=0)*100
+#X_test_d=X_test_d.div(X_test_d.sum(axis=1),axis=0)*100
+
+#With or without CLR subcompositional normalisation
+from skbio.stats.composition import clr
+X_train_d=clr(X_train_d+1)
+X_test_d=clr(X_test_d+1)
+
+hyper_parameters = [{'n_estimators': [s for s in range(50, 80, 5)],'criterion':['gini'],
                         'max_features': ['auto'],
-                        'max_depth':[s for s in range(3, 5, 1)],
+                        'max_depth':[3,4,5,6,7,8,9],
                         'min_samples_split':[2]
                         }, ]
 scoring={"Acc":make_scorer(accuracy_score)}
@@ -178,7 +191,7 @@ results = clf.cv_results_
 df=pd.DataFrame(results)
 print("Mean test accuracy",df["mean_test_Acc"])
 
-rf=RandomForestClassifier(n_jobs=-1, n_estimators=80,min_samples_split=2,max_depth=4,class_weight="balanced",bootstrap=True)
+rf=RandomForestClassifier(n_jobs=-1, n_estimators=60,min_samples_split=2,max_depth=6,class_weight="balanced",bootstrap=True)
 rf.fit(X_train_d, y_train)                         
 y_pred=rf.predict(X_test_d)
 print(confusion_matrix(y_test,y_pred))
