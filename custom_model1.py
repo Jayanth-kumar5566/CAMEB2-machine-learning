@@ -60,10 +60,14 @@ f=pd.read_csv("./data/feature_sel_LEFSe/selected_features.csv",index_col=0).inde
 df_sel=df.loc[:,f]
 del df,f
 
+'''
 #Data transformation - CLR
 df_norm=clr(df_sel+1)
 df_norm=pd.DataFrame(df_norm,index=df_sel.index,columns=df_sel.columns)
+'''
 
+#Data transformation - Relative_abundace
+df_norm=df_sel.div(df_sel.sum(axis=1),axis=0)*100
 #Training and testing splitting
 X_train_d=df_norm.reindex(y_train.index)
 X_test_d=df_norm.reindex(y_test.index)
@@ -131,10 +135,11 @@ Acuracy_cbalanced.to_csv("tuning_res.csv")
 #Input the best parameters and then run
 x=[]
 for i in range(100):
-    rf=RandomForestClassifier(n_jobs=-1, n_estimators=145,min_samples_split=2,max_depth=9,class_weight="balanced",bootstrap=True)
+    rf=RandomForestClassifier(n_jobs=-1, n_estimators=5,min_samples_split=2,max_depth=3,class_weight="balanced",bootstrap=True)
     rf.fit(X_train_d, y_train)                         
     y_pred=rf.predict(X_test_d)
     print(confusion_matrix(y_test,y_pred))
     x.append(rf.score(X_test_d,y_test))
 
 print("Median of testing acc",np.median(x))
+'''
