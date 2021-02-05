@@ -1,3 +1,4 @@
 data/*.csv
-data/feature_sel_LEFSe/*.png
 data/feature_sel_LEFSe/*.csv
+data/feature_sel_selbal/*.csv
+

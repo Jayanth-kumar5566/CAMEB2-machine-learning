@@ -12,8 +12,12 @@ df<-df[ind,]
 
 labels<-c(as.character(y1$ExacerbatorState),as.character(y2$ExacerbatorState))
 labels[labels=="Exacerbator"]="NonEx"
-labels<-factor(labels)
+labels<-factor(labels,levels = c("NonEx","FreqEx"))
 
 
-selbal(x = df, y = labels,zero.rep="one")
+res<-selbal(x = df, y = labels,zero.rep="one",logit.acc = "Dev",logt = TRUE,tab = TRUE,maxV = 50,draw = FALSE)
+selected_f<-as.data.frame(res[[4]])
+
+write.csv(selected_f,"selected_features.csv")
+
 
