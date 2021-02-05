@@ -56,7 +56,8 @@ y_train=pd.read_csv("./../METADATA/data_194.csv",index_col=0)
 y_test=pd.read_csv("./../METADATA/data_test.csv",index_col=0)
 
 # Feature-selection LEFSe
-f=pd.read_csv("./data/feature_sel_LEFSe/selected_features.csv",index_col=0).index
+f=pd.read_csv("./data/feature_sel_selbal/selected_features.csv",index_col=0)["res[[4]]"].to_list()
+#manually replace . with space
 df_sel=df.loc[:,f]
 del df,f
 
@@ -89,9 +90,9 @@ print("Testing Acc",lr.score(X_test_d,y_test))
 
 
 #Random Forest
-hyper_parameters = [{'n_estimators': [s for s in range(5, 150, 10)],'criterion':['gini'],
+hyper_parameters = [{'n_estimators': [s for s in range(5, 150, 5)],'criterion':['gini'],
                         'max_features': ['auto'],
-                        'max_depth':[s for s in range(2, 12, 1)],
+                        'max_depth':[s for s in range(2, 11, 1)],
                         'min_samples_split':[2]
                         }, ]
 scoring={"Acc":make_scorer(accuracy_score)}
@@ -137,7 +138,7 @@ Acuracy_cbalanced.to_csv("tuning_res.csv")
 #Input the best parameters and then run
 x=[]
 for i in range(100):
-    rf=RandomForestClassifier(n_jobs=-1, n_estimators=35,min_samples_split=2,max_depth=6,class_weight="balanced",bootstrap=True)
+    rf=RandomForestClassifier(n_jobs=-1, n_estimators=120,min_samples_split=2,max_depth=3,class_weight="balanced",bootstrap=True)
     rf.fit(X_train_d, y_train)                         
     y_pred=rf.predict(X_test_d)
     print(confusion_matrix(y_test,y_pred))
