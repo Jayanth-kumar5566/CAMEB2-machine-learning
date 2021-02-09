@@ -112,7 +112,6 @@ lr.fit(X_train_d,y_train)
 print("Training Acc",lr.score(X_train_d,y_train))
 print("Testing Acc",lr.score(X_test_d,y_test))
 
-
 #Random Forest
 hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],
                         'max_features': ['auto'],
@@ -180,7 +179,8 @@ Acuracy_cbalanced.to_csv("tuning_res.csv")
 #Input the best parameters and then run
 x=[]
 for i in range(100):
-    rf=RandomForestClassifier(n_jobs=-1, n_estimators=105,min_samples_split=2,max_depth=5,class_weight="balanced",bootstrap=True)
+    rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=11,max_depth=5,min_samples_leaf
+=0.021,class_weight="balanced",bootstrap=True)
     rf.fit(X_train_d, y_train)                         
     y_pred=rf.predict(X_test_d)
     print(confusion_matrix(y_test,y_pred))
