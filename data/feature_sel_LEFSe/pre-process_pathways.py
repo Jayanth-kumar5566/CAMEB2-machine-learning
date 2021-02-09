@@ -54,4 +54,3 @@ pickle.dump(dic_, file_pi)
 file_pi.close()
 
 train.to_csv("./pathways/to_lefse_pathways.csv",sep='\t')
-#Find and replace " " by "_" in excel

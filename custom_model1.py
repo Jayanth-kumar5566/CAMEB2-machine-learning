@@ -64,16 +64,41 @@ del df,f
 #Data transformation - CLR
 df_norm=clr(df_sel+1)
 df_norm=pd.DataFrame(df_norm,index=df_sel.index,columns=df_sel.columns)
-
+del df_sel
 '''
 #Data transformation - Relative_abundace
 df_norm=df_sel.div(df_sel.sum(axis=1),axis=0)*100
 '''
 
+#Pathway dataset
+df=pd.read_csv("./../MASTER-TABLES/HUMANN2/humann2_unipathway_pathabundance_relab.tsv",sep='\t',index_col=0)
+pathways=[i.find("|")==-1 for i in df.index]
+df=df.loc[pathways,:]
+del pathways
+
+df.columns=[i.split("_")[0] for i in df.columns]
+df.drop(["13LTBlank","76LTBlank","Blank"],axis=1,inplace=True)
+df.drop(["UNMAPPED","UNINTEGRATED"],axis=0,inplace=True)
+
+df=df.transpose()
+
+# Feature-selection LEFSe
+f=pd.read_csv("./data/feature_sel_LEFSe/pathways/selected_pathways.csv",index_col=0).index
+df_sel=df.loc[df_norm.index,f]
+del df,f
+
+#Pathway_norm
+pdf_norm=clr(df_sel+1)
+pdf_norm=pd.DataFrame(pdf_norm,index=df_sel.index,columns=df_sel.columns)
+del df_sel
+
+#Merge dataframes
+data=pd.merge(df_norm,pdf_norm,left_index=True,right_index=True)
+
 #Training and testing splitting
-X_train_d=df_norm.reindex(y_train.index)
-X_test_d=df_norm.reindex(y_test.index)
-del df_norm
+X_train_d=data.reindex(y_train.index)
+X_test_d=data.reindex(y_test.index)
+del data
 #y_test and train - class replacment
 y_train=y_train["ExacerbatorState"]
 y_train=y_train.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
@@ -137,7 +162,7 @@ Acuracy_cbalanced.to_csv("tuning_res.csv")
 #Input the best parameters and then run
 x=[]
 for i in range(100):
-    rf=RandomForestClassifier(n_jobs=-1, n_estimators=35,min_samples_split=2,max_depth=6,class_weight="balanced",bootstrap=True)
+    rf=RandomForestClassifier(n_jobs=-1, n_estimators=105,min_samples_split=2,max_depth=5,class_weight="balanced",bootstrap=True)
     rf.fit(X_train_d, y_train)                         
     y_pred=rf.predict(X_test_d)
     print(confusion_matrix(y_test,y_pred))
