@@ -114,10 +114,11 @@ print("Testing Acc",lr.score(X_test_d,y_test))
 
 
 #Random Forest
-hyper_parameters = [{'n_estimators': [s for s in range(5, 150, 10)],'criterion':['gini'],
+hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],
                         'max_features': ['auto'],
-                        'max_depth':[s for s in range(2, 12, 1)],
-                        'min_samples_split':[2]
+                        'max_depth':[s for s in range(5, 10, 1)],
+                        'min_samples_split':[s for s in range(10, 14, 1)],
+                        'min_samples_leaf':[s for s in np.arange(0.005, 0.035, 0.001)],
                         }, ]
 scoring={"Acc":make_scorer(accuracy_score)}
 
@@ -135,14 +136,22 @@ def score(x,y=y_train):
 	x is the cv result row
 	y is y_train
 	'''
-	table=pd.crosstab(x.values,y.values,rownames=["CV accuracy"],colnames=["Groups"])
-	table_norm=table.div(table.sum(axis=0),axis=1)
-	balanced_acc=table_norm.iloc[1,:].mean()
-	return(balanced_acc)
+	x=x.reset_index(drop=True)
+	y=y.reset_index(drop=True)
+	z=pd.DataFrame(x).join(y)
+	zg=z.groupby("ExacerbatorState")
+	table=zg.mean()
+	balanced_acc=np.mean(table)
+	return(balanced_acc.values[0])
 
 Acuracy_cbalanced=df_test.apply(score,axis=1)
 Acuracy_cbalanced=pd.DataFrame(Acuracy_cbalanced,columns=["Class_average Accuracy"])
 del df_test
+
+
+#===================Training_Acc============================
+train_acc_balanced=df["mean_train_Acc"]
+
 
 print("Class balanced Accuracy",Acuracy_cbalanced)
 print("Max Class balanced Accuracy",Acuracy_cbalanced.max())
@@ -152,9 +161,18 @@ def get_nest(df):
 
 def get_maxdept(df):
     return(df["max_depth"])
+    
+def get_min_ss(df):
+    return(df["min_samples_split"])
+    
+def get_min_sl(df):
+    return(df["min_samples_leaf"])    
 
 Acuracy_cbalanced["n_estimators"]=df.loc[:,"params"].apply(get_nest)
 Acuracy_cbalanced["max_depth"]=df.loc[:,"params"].apply(get_maxdept)
+Acuracy_cbalanced["min_samples_split"]=df.loc[:,"params"].apply(get_min_ss)
+Acuracy_cbalanced["min_samples_leaf"]=df.loc[:,"params"].apply(get_min_sl)
+Acuracy_cbalanced["training_Acc"]=train_acc_balanced
 
 Acuracy_cbalanced.to_csv("tuning_res.csv")
 

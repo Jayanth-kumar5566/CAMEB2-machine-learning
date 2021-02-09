@@ -44,3 +44,11 @@ fig.colorbar(surf, shrink=0.5, aspect=5)
 #plt.title('Meshgrid Created from 3 1D Arrays')
 
 plt.show()
+
+
+for xaxis in ['n_estimators', 'min_samples_leaf','max_depth', 'min_samples_split']:
+	plt.scatter(df[xaxis],df["Class_average Accuracy"],color="blue",label="testing")
+	plt.scatter(df[xaxis],df["training_Acc"],color="red",label="training")
+	plt.xlabel(xaxis)
+	plt.legend()
+	plt.show()
