@@ -56,7 +56,7 @@ y_train=pd.read_csv("./../METADATA/data_194.csv",index_col=0)
 y_test=pd.read_csv("./../METADATA/data_test.csv",index_col=0)
 
 # Feature-selection LEFSe
-f=pd.read_csv("./data/feature_sel_LEFSe/selected_features.csv",index_col=0).index
+f=pd.read_csv("./data/feature_sel_LEFSe/selected_microbes_80.csv",index_col=0).index
 df_sel=df.loc[:,f]
 del df,f
 
@@ -68,7 +68,7 @@ del df_sel
 '''
 #Data transformation - Relative_abundace
 df_norm=df_sel.div(df_sel.sum(axis=1),axis=0)*100
-'''
+
 
 #Pathway dataset
 df=pd.read_csv("./../MASTER-TABLES/HUMANN2/humann2_unipathway_pathabundance_relab.tsv",sep='\t',index_col=0)
@@ -94,30 +94,32 @@ del df_sel
 
 #Merge dataframes
 data=pd.merge(df_norm,pdf_norm,left_index=True,right_index=True)
-
+'''
+data=df_norm
 #Training and testing splitting
 X_train_d=data.reindex(y_train.index)
 X_test_d=data.reindex(y_test.index)
 del data
 #y_test and train - class replacment
 y_train=y_train["ExacerbatorState"]
-y_train=y_train.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
+y_train=y_train.replace({"NonEx":0,"Exacerbator":1,"FreqEx":2})
 y_test=y_test["ExacerbatorState"]
-y_test=y_test.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
+y_test=y_test.replace({"NonEx":0,"Exacerbator":1,"FreqEx":2})
 
-
+'''
 #Logistic-regression
 lr = LogisticRegression(random_state=0,penalty="l1",class_weight="balanced",n_jobs=-1)
 lr.fit(X_train_d,y_train)
 print("Training Acc",lr.score(X_train_d,y_train))
 print("Testing Acc",lr.score(X_test_d,y_test))
+'''
 
 #Random Forest
 hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],
                         'max_features': ['auto'],
-                        'max_depth':[s for s in range(5, 10, 1)],
-                        'min_samples_split':[s for s in range(10, 14, 1)],
-                        'min_samples_leaf':[s for s in np.arange(0.005, 0.035, 0.001)],
+                        'max_depth':[s for s in range(2, 20, 2)],
+                        'min_samples_split':[s for s in range(2, 20, 2)],
+                        'min_samples_leaf':[s for s in np.arange(0.001, 0.1, 0.005)],
                         }, ]
 scoring={"Acc":make_scorer(accuracy_score)}
 
@@ -179,8 +181,8 @@ Acuracy_cbalanced.to_csv("tuning_res.csv")
 #Input the best parameters and then run
 x=[]
 for i in range(100):
-    rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=11,max_depth=5,min_samples_leaf
-=0.021,class_weight="balanced",bootstrap=True)
+    rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=2,max_depth=12,min_samples_leaf
+=0.091,class_weight="balanced",bootstrap=True)
     rf.fit(X_train_d, y_train)                         
     y_pred=rf.predict(X_test_d)
     print(confusion_matrix(y_test,y_pred))
