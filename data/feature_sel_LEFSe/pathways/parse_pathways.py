@@ -12,7 +12,7 @@ args=sys.argv
 file=open(args[1],'r')
 
 out=open(args[2],'w')
-out.write('Features,value,group\n')
+out.write('Features\tvalue\tgroup\n')
 lines=file.readlines()
 for i in lines:
 	y=i.split('\t')[3]
@@ -20,6 +20,6 @@ for i in lines:
 		x=(i.split('\t')[0])
 		x=dict_[str(x)]
 		g=i.split('\t')[2]
-		out.write(str(x)+","+str(y)+","+str(g)+'\n')
+		out.write(str(x)+"\t"+str(y)+"\t"+str(g)+'\n')
 
 out.close()
