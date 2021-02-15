@@ -149,12 +149,68 @@ X_test_d=data.reindex(y_test.index)
 del data
 #y_test and train - class replacment
 y_train=y_train["ExacerbatorState"]
-y_train=y_train.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
+y_train=y_train.replace({"NonEx":0,"Exacerbator":0,"FreqEx":1})
 y_test=y_test["ExacerbatorState"]
-y_test=y_test.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
+y_test=y_test.replace({"NonEx":0,"Exacerbator":0,"FreqEx":1})
 
+
+#Principal Component Analysis
+def pca(X_train,X_test,ratio=0.99):
+    pca = PCA()
+    pca.fit(X_train)
+    n_comp = 0
+    ratio_sum = 0.0
+    for comp in pca.explained_variance_ratio_:
+        ratio_sum += comp
+        n_comp += 1
+        if ratio_sum >= ratio:  # Selecting components explaining 99% of variance
+            break
+    pca = PCA(n_components=n_comp)
+    pca.fit(X_train)
+    X_train = pca.transform(X_train)
+    X_test = pca.transform(X_test)
+    return(X_train,X_test)
 
 #Dimension reduction --VAE to 14_dimension
+def saveLossProgress_ylim(history):
+        loss_collector = []
+        loss_max_atTheEnd = 0.0
+        for hist in history.history:
+            current = history.history[hist]
+            loss_collector += current
+            if current[-1] >= loss_max_atTheEnd:
+                loss_max_atTheEnd = current[-1]
+        return loss_collector, loss_max_atTheEnd
+
+
+def saveLossProgress(history):
+        loss_collector, loss_max_atTheEnd = saveLossProgress_ylim(history)
+        figureName = "vae_plot.png"
+        plt.ylim(min(loss_collector)*0.9, loss_max_atTheEnd * 2.0)
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
+        plt.title('model loss')
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train loss', 'val loss'],loc='upper right')
+        plt.savefig(figureName)
+        plt.close()
+        if 'recon_loss' in history.history:
+            figureName = 'reconstruction_loss_detailed'
+            plt.ylim(min(loss_collector) * 0.9, loss_max_atTheEnd * 2.0)
+            plt.plot(history.history['loss'])
+            plt.plot(history.history['val_loss'])
+            plt.plot(history.history['recon_loss'])
+            plt.plot(history.history['val_recon_loss'])
+            plt.plot(history.history['kl_loss'])
+            plt.plot(history.history['val_kl_loss'])
+            plt.title('model loss')
+            plt.ylabel('loss')
+            plt.xlabel('epoch')
+            plt.legend(['train loss', 'val loss', 'recon_loss', 'val recon_loss', 'kl_loss', 'val kl_loss'], loc='upper right')
+            plt.savefig(figureName + '.png')
+            plt.close()
+
 def vae(X_train,y_train,X_test,dims = [14], epochs=2000, batch_size=1, verbose=2, loss='mse', output_act=False, act='relu', patience=25, beta=1.0, warmup=True, warmup_rate=0.01, val_rate=0.2, no_trn=False,seed=0):
         # callbacks for each epoch
         modelName = "vae_model" + '.h5'
@@ -179,8 +235,11 @@ def vae(X_train,y_train,X_test,dims = [14], epochs=2000, batch_size=1, verbose=2
         # insert input shape into dimension list
         dims.insert(0, X_inner_train.shape[1])
         # create vae model
+        print(dims)
         vae, encoder, decoder = DNN_models.variational_AE(dims, act=act, recon_loss=loss, output_act=output_act, beta=beta)
         vae.summary()
+        encoder.summary()
+        decoder.summary()
         if no_trn:
                 return
         # fit
@@ -195,9 +254,12 @@ def vae(X_train,y_train,X_test,dims = [14], epochs=2000, batch_size=1, verbose=2
 
 #Dimensionality reduction
 '''
-D_X_train_d,D_X_test_d,history= vae(X_train_d,y_train,X_test_d,dims=[100,50])
+D_X_train_d,D_X_test_d,history= vae(X_train_d,y_train,X_test_d,dims=[80,20])
+saveLossProgress(history)
+'''
+#D_X_train_d,D_X_test_d=X_train_d,X_test_d
 
-D_X_train_d,D_X_test_d=X_train_d,X_test_d
+D_X_train_d,D_X_test_d = pca(X_train_d,X_test_d,ratio=0.95)
 
 #Logistic-regression
 lr = LogisticRegression(random_state=0,penalty="l1",class_weight="balanced",n_jobs=-1)
@@ -207,7 +269,6 @@ print("Testing Acc",lr.score(D_X_test_d,y_test))
 y_pred=lr.predict(D_X_test_d)
 print("Confusion Matrix ",confusion_matrix(y_test,y_pred))
 print("F Score in weighted fashion ",f1_score(y_test,y_pred,average="weighted"))
-'''
 
 #Random Forest
 hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],

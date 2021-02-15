@@ -43,7 +43,7 @@ y=pandas.concat([y1,y2],axis=0)
 
 
 #y=y[(y.ExacerbatorState=="FreqEx") | (y.ExacerbatorState=="NonEx")]
-y=y.replace({"NonEx":0,"Exacerbator":1,"FreqEx":1})
+y=y.replace({"NonEx":0,"Exacerbator":0,"FreqEx":1})
 train=df_norm.reindex(y.index)
 
 train=pandas.merge(train,y["ExacerbatorState"],left_index=True,right_index=True)
