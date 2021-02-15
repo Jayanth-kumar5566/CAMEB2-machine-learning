@@ -1,8 +1,12 @@
 Features,value,group
-Aminoglycoside,3.99973497479,1
-Aminocoumarin antibiotic,3.87011433108,0
-Bicyclomycin,3.69020977506,1
-Triclosan,3.64450915133,1
-Diaminopyrimidine,3.82636061828,1
-Fluoroquinolone,4.78321101169,0
-Beta-lactam,4.22555425712,1
+Fosfomycin,3.63364838149,1
+Aminoglycoside,3.95719302257,1
+Aminocoumarin antibiotic,3.98783521502,0
+Bicyclomycin,3.76078209731,1
+Nitroimidazole antibiotic,4.15008017204,0
+Triclosan,3.70810652135,1
+Sulfonamide antibiotic,3.99623642939,0
+Diaminopyrimidine,4.24323125469,1
+Peptide antibiotic,3.56925154648,1
+Fluoroquinolone,4.7757749135,0
+Beta-lactam,4.19280242499,1

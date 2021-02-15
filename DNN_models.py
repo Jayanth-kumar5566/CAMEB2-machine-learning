@@ -3,6 +3,7 @@ from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Input, Lambda, Conv2D, Conv2DTranspose, MaxPool2D, UpSampling2D, Flatten, Reshape, Cropping2D
 from keras import backend as K
 from keras.losses import mse, binary_crossentropy
+import keras
 import math
 import numpy as np
 
@@ -254,8 +255,10 @@ def variational_AE(dims, act='relu', init='glorot_uniform', output_act = False, 
 
     vae_loss = K.mean(reconstruction_loss + (beta * kl_loss))
     vae.add_loss(vae_loss)
-
-    vae.compile(optimizer='adam', )
+    
+    optimizer = keras.optimizers.adam(lr=0.001)     #added new to test
+    #vae.compile(optimizer='adam', )
+    vae.compile(optimizer=optimizer, )
 
     vae.metrics_tensors.append(K.mean(reconstruction_loss))
     vae.metrics_names.append("recon_loss")

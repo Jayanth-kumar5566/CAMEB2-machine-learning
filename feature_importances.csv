@@ -1,0 +1,78 @@
+,0,1
+0,Stenotrophomonas maltophilia,1.3444521387471402
+1,Streptococcus pneumoniae,1.1611623738247419
+2,Raoultella terrigena,1.1747684368188724
+3,Salmonella enterica,1.3029389528738577
+4,Prevotella jejuni,0.9825128993128364
+5,Haemophilus haemolyticus,0.7284733866051178
+6,Streptococcus intermedius,0.9275097418354199
+7,Klebsiella oxytoca,1.2174377152403153
+8,Haemophilus parahaemolyticus,1.3064069446016313
+9,Streptococcus mitis,2.430241559740235
+10,Streptococcus pyogenes,1.2796011718660638
+11,Haemophilus influenzae,0.8630345106760497
+12,Lachnospiraceae bacterium oral taxon 500,0.9107476541594997
+13,Olsenella sp. oral taxon 807,1.2072400930315146
+14,Fusobacterium periodonticum,1.8925859516219334
+15,Treponema denticola,1.404973699924254
+16,Aggregatibacter segnis,1.1946827655716483
+17,Streptococcus cristatus,0.7534947080350628
+18,Fusobacterium nucleatum,1.6183611908639932
+19,Prevotella melaninogenica,0.7170465703650298
+20,Leuconostoc mesenteroides,1.2554775507843001
+21,Neisseria subflava,0.8704637349604879
+22,Neisseria flavescens,1.9354892817213665
+23,Desulfomicrobium orale,1.0340731194286805
+24,Corynebacterium argentoratense,0.875026282060818
+25,Haemophilus parainfluenzae,1.6772445728832899
+26,Klebsiella quasipneumoniae,1.3327460576572894
+27,Neisseria cinerea,1.5463902948537915
+28,Lawsonella clevelandensis,1.0715915456181457
+29,Streptococcus oralis,1.765993975335773
+30,Klebsiella aerogenes,1.7379329086502648
+31,Candida albicans,2.532795927325912
+32,Enterobacter kobei,0.7732341308236939
+33,Neisseria mucosa,1.2247076650529696
+34,Klebsiella pneumoniae,2.459288318436534
+35,Enterobacter asburiae,1.397488827433653
+36,Gemella haemolysans,2.688422056002766
+37,Schaalia odontolytica,0.8483267628755818
+38,Gemella sanguinis,1.0781896720920827
+39,Organic_acid_metabolism,1.0335244462322422
+40,Nucleoside_biosynthesis,1.1922742480951147
+41,Hydrocarbon_metabolism,0.7000860383590028
+42,Ketone_degradation,0.8265995674431332
+43,Glycan_metabolism,0.8953339616236892
+44,Lipopolysaccharide_metabolism,0.7912472988906225
+45,Purine_metabolism,1.1884120382161592
+46,Protein_modification,1.0622902828015204
+47,Porphyrin-containing_compound_metabolism,1.1370975375527117
+48,Plant_hormone_metabolism,0.8533932639920078
+49,Amino-acid_degradation,0.8310105301639202
+50,Amine_and_polyamine_degradation,0.8325706615583182
+51,Biopolymer_metabolism,0.7346964868952954
+52,Antibiotic_biosynthesis,1.0231771883103122
+53,Aromatic_compound_metabolism.,0.9749164116785349
+54,Aromatic_compound_metabolism,3.5253101607884525
+55,Sulfur_metabolism,3.6266564812434288
+56,Xenobiotic_degradation,1.470055895861105
+57,Flavonoid_metabolism,0.7994818581127027
+58,Fermentation,1.0105267069609676
+59,Exopolysaccharide_biosynthesis,5.2609598004053995
+60,Carbohydrate_degradation,1.424016604483141
+61,Carbohydrate_acid_metabolism,0.7718097443887866
+62,Cell_wall_biogenesis,2.8314699528356164
+63,Carbohydrate_metabolism,1.0178400427220653
+64,Cofactor_biosynthesis,1.0465666830404905
+65,Fosfomycin,0.6900987994108839
+66,Aminoglycoside,0.5943854735678069
+67,Aminocoumarin antibiotic,2.373125185263777
+68,Bicyclomycin,0.8056583289868398
+69,Nitroimidazole antibiotic,0.9632865333201212
+70,Triclosan,0.6476660336200505
+71,Sulfonamide antibiotic,1.88054879506889
+72,Diaminopyrimidine,0.6481677370963154
+73,Peptide antibiotic,0.4307743856759403
+74,Fluoroquinolone,0.5500421595602553
+75,Beta-lactam,1.0323675260617606
+76,Phycodnaviridae,0.0

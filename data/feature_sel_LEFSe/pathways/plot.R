@@ -1,9 +1,9 @@
 library(ggpubr)
 library(ggplot2)
-data<-read.csv("selected_microbes.csv")
+data<-read.csv("selected_pathways.csv")
 data$group<-factor(data$group)
 
-png("plot.png",width = 8,height = 8,res = 300,units="in")
+png("plot.png",width = 12,height = 5,res = 300,units="in")
 ggbarplot(data, x = "Features", y = "value",
           fill = "group",           # change fill color by mpg_level
           color = "black",            # Set bar border colors to white
