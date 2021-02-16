@@ -262,32 +262,6 @@ saveLossProgress(history)
 D_X_train_d,D_X_test_d = pca(X_train_d,X_test_d,ratio=0.95)
 
 #Logistic-regression
-lr = LogisticRegression(random_state=0,penalty="l1",class_weight="balanced",n_jobs=-1)
-lr.fit(D_X_train_d,y_train)
-print("Training Acc",lr.score(D_X_train_d,y_train))
-print("Testing Acc",lr.score(D_X_test_d,y_test))
-y_pred=lr.predict(D_X_test_d)
-print("Confusion Matrix ",confusion_matrix(y_test,y_pred))
-print("F Score in weighted fashion ",f1_score(y_test,y_pred,average="weighted"))
-
-#Random Forest
-hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],
-                        'max_features': ['auto'],
-                        'max_depth':[s for s in range(4, 10, 1)],
-                        'min_samples_split':[s for s in range(6, 12, 1)],
-                        'min_samples_leaf':[s for s in range(2, 13, 1)],
-                        }, ]
-scoring={"Acc":make_scorer(accuracy_score)}
-
-clf = GridSearchCV(RandomForestClassifier(n_jobs=-1, class_weight="balanced",bootstrap=True), hyper_parameters, cv=LeaveOneOut(), scoring=scoring, n_jobs=-1, verbose=1,refit="Acc",return_train_score=True)
-
-clf.fit(X_train_d, y_train)                         
-
-results = clf.cv_results_
-df=pd.DataFrame(results)
-
-df_test=df.filter(regex=("split.*_test_Acc"))
-
 def score(x,y=y_train):
 	'''
 	x is the cv result row
@@ -301,6 +275,41 @@ def score(x,y=y_train):
 	balanced_acc=np.mean(table)
 	return(balanced_acc.values[0])
 
+# define models and parameters
+solvers = ['liblinear']
+penalty = ['l1']
+#c_values = [100, 10, 1.0, 0.1, 0.01,0.001]
+c_values = np.linspace(0.01,100,50)
+
+#scoring={"Acc":make_scorer(accuracy_score)}
+scoring={"Acc":make_scorer(balanced_accuracy_score)}
+# define grid search
+grid = dict(solver=solvers,penalty=penalty,C=c_values)
+model = LogisticRegression(fit_intercept=True,class_weight="balanced")
+clf = GridSearchCV(estimator=model, param_grid=grid, cv=LeaveOneOut(), scoring=scoring,n_jobs=-1,return_train_score=True,refit=False)
+clf.fit(D_X_train_d, y_train)
+
+'''
+#Random Forest
+hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],
+                        'max_features': ['auto'],
+                        'max_depth':[s for s in range(4, 10, 1)],
+                        'min_samples_split':[s for s in range(6, 12, 1)],
+                        'min_samples_leaf':[s for s in range(2, 13, 1)],
+                        }, ]
+scoring={"Acc":make_scorer(accuracy_score)}
+
+clf = GridSearchCV(RandomForestClassifier(n_jobs=-1, class_weight="balanced",bootstrap=True), hyper_parameters, cv=LeaveOneOut(), scoring=scoring, n_jobs=-1, verbose=1,refit="Acc",return_train_score=True)
+
+clf.fit(X_train_d, y_train)                         
+'''
+
+results = clf.cv_results_
+df=pd.DataFrame(results)
+
+df_test=df.filter(regex=("split.*_test_Acc"))
+
+
 Acuracy_cbalanced=df_test.apply(score,axis=1)
 Acuracy_cbalanced=pd.DataFrame(Acuracy_cbalanced,columns=["Class_average Accuracy"])
 del df_test
@@ -308,6 +317,12 @@ del df_test
 
 #===================Training_Acc============================
 train_acc_balanced=df["mean_train_Acc"]
+
+plt.plot(c_values,train_acc_balanced,label="train")
+plt.plot(c_values,Acuracy_cbalanced,label="test_balanced")
+plt.legend()
+plt.title("l1 norm")
+plt.savefig("lr1_plot.png",dpi=600)
 
 
 print("Class balanced Accuracy",Acuracy_cbalanced)
@@ -334,6 +349,18 @@ Acuracy_cbalanced["training_Acc"]=train_acc_balanced
 Acuracy_cbalanced.to_csv("tuning_res.csv")
 
 '''
+
+lr = LogisticRegression(penalty="l1",class_weight="balanced",solver="liblinear",C=2,n_jobs=-1)
+lr.fit(D_X_train_d,y_train)
+print("Training Acc",lr.score(D_X_train_d,y_train))
+test_score=lr.score(D_X_test_d,y_test)
+print("Testing Acc",test_score)
+y_pred=lr.predict(D_X_test_d)
+print("Confusion Matrix ",confusion_matrix(y_test,y_pred))
+print("F Score in weighted fashion ",f1_score(y_test,y_pred,average="weighted"))
+
+
+
 #Input the best parameters and then run
 x=[]
 imp=0
