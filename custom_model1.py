@@ -56,7 +56,7 @@ import exception_handle
 args=sys.argv
 
 #Reading the data - training
-df=pd.read_csv("./../Data_21Dec20/species_data.csv",index_col=0)
+df=pd.read_csv("Network_analysis/edge_weights-across_patients.csv",index_col=0)
 y_train=pd.read_csv("./../METADATA/data_194.csv",index_col=0)
 y_test=pd.read_csv("./../METADATA/data_test.csv",index_col=0)
 
@@ -68,10 +68,13 @@ del df,f
 
 
 #Data transformation - CLR
+df_norm=df_sel
+
+'''
 df_norm=clr(df_sel+1)
 df_norm=pd.DataFrame(df_norm,index=df_sel.index,columns=df_sel.columns)
 del df_sel
-'''
+
 #Data transformation - Relative_abundace
 df_norm=df_sel.div(df_sel.sum(axis=1),axis=0)*100
 '''
@@ -151,6 +154,8 @@ data=pd.merge(data,vdf_norm,left_index=True,right_index=True)
 #Training and testing splitting
 X_train_d=data.reindex(y_train.index)
 X_test_d=data.reindex(y_test.index)
+scaler = StandardScaler()
+scaler.fit(data)
 del data
 #y_test and train - class replacment
 y_train=y_train["ExacerbatorState"]
@@ -262,9 +267,11 @@ def vae(X_train,y_train,X_test,dims = [14], epochs=2000, batch_size=1, verbose=2
 D_X_train_d,D_X_test_d,history= vae(X_train_d,y_train,X_test_d,dims=[80,20])
 saveLossProgress(history)
 '''
-D_X_train_d,D_X_test_d=X_train_d,X_test_d
+#D_X_train_d,D_X_test_d=X_train_d,X_test_d
 
-#D_X_train_d,D_X_test_d = pca(X_train_d,X_test_d,ratio=0.99)
+X_train_d=scaler.transform(X_train_d)
+X_test_d=scaler.transform(X_test_d)
+D_X_train_d,D_X_test_d = pca(X_train_d,X_test_d,ratio=0.95)
 
 #Logistic-regression
 def score(x,y=y_train):
@@ -301,7 +308,7 @@ clf.fit(D_X_train_d, y_train)
 
 '''
 #Random Forest
-hyper_parameters = [{'n_estimators': [10,150],'criterion':['gini'],
+hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],
                         'max_features': ['auto'],
                         'max_depth':[None],
                         'min_samples_split':[i for i in np.linspace(0.001,0.5,50)],
@@ -364,12 +371,13 @@ if args[1]=="LOOCV":
     Acuracy_cbalanced.to_csv("tuning_res.csv")
 
 elif args[1]=="RepeatedKfold":
-    c_values=hyper_parameters[0]['min_samples_split']
+    c_values=hyper_parameters[0]['min_samples_leaf']
     plt.plot(c_values,df["mean_train_Acc"],label="train")
     plt.plot(c_values,df["mean_test_Acc"],label="test_balanced")
     plt.legend()
     plt.title("l1 norm")
     plt.savefig("lr1_plot.png",dpi=600)
+    plt.close()
 
 
 plt.plot(df["mean_train_Acc"],df["mean_test_Acc"],'o',markersize=1)
@@ -397,15 +405,13 @@ print("F Score in weighted fashion ",f1_score(y_test,y_pred,average="weighted"))
 x=[]
 imp=0
 for i in range(100):
-    rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=0.001,max_depth=None,min_samples_leaf
-=0.31669,class_weight="balanced",bootstrap=True)
-    rf.fit(X_train_d, y_train)
+    rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=0.2250408163265306,max_depth=None,min_samples_leaf=0.24540816326530612,class_weight="balanced",bootstrap=True)
+    rf.fit(D_X_train_d, y_train)
     imp=imp+rf.feature_importances_
-    y_pred=rf.predict(X_test_d)
+    y_pred=rf.predict(D_X_test_d)
     print(confusion_matrix(y_test,y_pred))
-    x.append(rf.score(X_test_d,y_test))
+    x.append(rf.score(D_X_test_d,y_test))
 
 print("Median of testing acc",np.median(x))
 f_imp=pd.DataFrame([i for i in zip(X_train_d,imp)],columns=["Features","Importance"])
 f_imp.to_csv("feature_importances.csv")
-
