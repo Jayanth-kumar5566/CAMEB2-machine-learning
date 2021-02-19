@@ -151,6 +151,8 @@ data=pd.merge(data,vdf_norm,left_index=True,right_index=True)
 #Training and testing splitting
 X_train_d=data.reindex(y_train.index)
 X_test_d=data.reindex(y_test.index)
+scaler = StandardScaler()
+scaler.fit(data)
 del data
 #y_test and train - class replacment
 y_train=y_train["ExacerbatorState"]
@@ -257,9 +259,13 @@ def vae(X_train,y_train,X_test,dims = [14], epochs=2000, batch_size=1, verbose=2
         X_test_m, _, X_test = encoder.predict(X_test) #mean, variance,sample
         return(X_train_m,X_test_m,history)
 
+X_train_d=scaler.transform(X_train_d)
+X_test_d=scaler.transform(X_test_d)
+
 #Dimensionality reduction
+
 '''
-D_X_train_d,D_X_test_d,history= vae(X_train_d,y_train,X_test_d,dims=[80,20])
+D_X_train_d,D_X_test_d,history= vae(X_train_d,y_train,X_test_d,dims=[20])
 saveLossProgress(history)
 '''
 D_X_train_d,D_X_test_d=X_train_d,X_test_d
@@ -399,13 +405,13 @@ imp=0
 for i in range(100):
     rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=0.001,max_depth=None,min_samples_leaf
 =0.31669,class_weight="balanced",bootstrap=True)
-    rf.fit(X_train_d, y_train)
+    rf.fit(D_X_train_d, y_train)
     imp=imp+rf.feature_importances_
-    y_pred=rf.predict(X_test_d)
+    y_pred=rf.predict(D_X_test_d)
     print(confusion_matrix(y_test,y_pred))
-    x.append(rf.score(X_test_d,y_test))
+    x.append(rf.score(D_X_test_d,y_test))
 
 print("Median of testing acc",np.median(x))
-f_imp=pd.DataFrame([i for i in zip(X_train_d,imp)],columns=["Features","Importance"])
+f_imp=pd.DataFrame([i for i in zip(D_X_train_d,imp)],columns=["Features","Importance"])
 f_imp.to_csv("feature_importances.csv")
 
