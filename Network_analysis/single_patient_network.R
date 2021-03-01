@@ -20,6 +20,8 @@ res<-as.data.frame(assay(res))
 
 res<-t(res)
 
+write.csv(res,"edge_weights-across_patients_unfiltered.csv")
+
 #filtering edges with no-variance
 ind<-apply(res,2,var)>0
 res<-res[,ind]
