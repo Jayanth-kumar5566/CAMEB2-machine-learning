@@ -3,12 +3,14 @@
 # Single pipeline to run all the analysis
 import sys
 import os
+import pandas
 from joblib import Parallel, delayed
 
 args=sys.argv
+
 '''
 Run as:
-	pipeline.py dataset alpha 
+	./pipeline.py dataset alpha lda_thres transformation
 
 dataset:
 	I   - clinical attributes
@@ -21,21 +23,30 @@ dataset:
 	
 alpha: alpha value 
 	0.1 (90%) or 0.05 (95%) used for LEFSe and Wilcoxon test - Feature selection
+	
 lda_thres: absolute lda  threshold
 	0 or 0.2 used for LEFSe threshold
-
+	
+transformation : The transformation to apply on the counts/raw data 	
+	clr  : Centered Log ratio
+	rel  : relative abundance
+	none : No transformation 
+	arc  : arc_sine transformation #yet to implement
+	
+	should include transformations for each code seperated by ',' (maintaining the order) 
+	example: none,clr	
 '''
 #Dataset
 
 #parse dataset code
 
 dataset_code=args[1].split("+")
-
+trans_code=args[4].split(",")
 #Feature selection with LEFSe
 def dataset(number,args):
 	if number=="I":
-		'''Clinical attributes yet to run
-		'''
+		os.system("python3 Codes_pipeline/pre-process_clinical.py")
+		os.system("./Codes_pipeline/fet_sel_clinical.R /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Datasets/I.csv /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/I.csv")
 		return(None)
 	elif number=="II":
 		os.system("python3 Codes_pipeline/pre-process.py")
@@ -68,6 +79,18 @@ def dataset(number,args):
 	else:
 		sys.exit("Please check your input")
 		
-datasets=Parallel(n_jobs=16)(delayed(dataset)(i,args) for i in dataset_code) #Run in parallel 
+#Execute Part 1 of the pipeline - dataset processing and feature selection
+Parallel(n_jobs=16)(delayed(dataset)(i,args) for i in dataset_code) #Run in parallel 
+
+#=============Part 2=========================
+#Exception block
+if len(dataset_code)!= len(trans_code): 
+	sys.exit('Please check input -- inconsistent dataset code and transformation')
+	
+import Codes_pipeline.part2_data_merge as dm
+datasets=Parallel(n_jobs=16)(delayed(dm.data_sel)(dataset_code[i],trans_code[i]) for i in range(len(dataset_code)))	
+
+#concatenate all the datafames in the list
+data = pandas.concat([df.stack() for df in datasets], axis=0).unstack()
 
 
