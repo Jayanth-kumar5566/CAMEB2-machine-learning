@@ -27,9 +27,7 @@ def data_sel(code,trans):
 		df=pd.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/I.csv",index_col=0)
 		f=df.columns
 	elif code == "II":
-		df=pd.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/Data_21Dec20/species_data.csv",index_col=0)
-		y_train=pd.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_194.csv",index_col=0)
-		y_test=pd.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_194.csv",index_col=0)
+		df=pd.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/Data_21Dec20/species_data.csv",index_col=0)		
 		# Feature-selection LEFSe
 		f=pd.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/II.csv",index_col=0).index
 

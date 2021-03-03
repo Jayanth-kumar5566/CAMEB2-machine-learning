@@ -10,7 +10,7 @@ args=sys.argv
 
 '''
 Run as:
-	./pipeline.py dataset alpha lda_thres transformation
+	./pipeline.py dataset alpha lda_thres transformation dimension_reduction ml_algo param_dimred param_ml
 
 dataset:
 	I   - clinical attributes
@@ -34,12 +34,21 @@ transformation : The transformation to apply on the counts/raw data
 	arc  : arc_sine transformation #yet to implement
 	
 	should include transformations for each code seperated by ',' (maintaining the order) 
-	example: none,clr	
+	example: none,clr
+	
+dimension_reduction	: "none", "pca", "VAE", "rp"
+ml_algo 			: "logit", "rf" 
+param_dimred		: parameters for dimension reduction algorthim seperated by ,
+	"none"	- none
+	"pca"	- ratio(explanined variance to preserve)	
+	"rp"	- epsilon value
+	"vae"	- dimensions 80,20
+param_ml			: parameters for ML algorithm
+	"none"	- none  [all built in] #just incase
 '''
 #Dataset
 
 #parse dataset code
-
 dataset_code=args[1].split("+")
 trans_code=args[4].split(",")
 #Feature selection with LEFSe
@@ -92,5 +101,7 @@ datasets=Parallel(n_jobs=16)(delayed(dm.data_sel)(dataset_code[i],trans_code[i])
 
 #concatenate all the datafames in the list
 data = pandas.concat([df.stack() for df in datasets], axis=0).unstack()
-
-
+data.to_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv")
+#=============Part 3============================
+#Machine Learning part
+os.system("./machine_learning.py /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv /home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_194.csv /home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_test.csv "+args[5]+" "+args[6]+" "+args[7]+" "+args[8]+" /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Machine_Learning/")
