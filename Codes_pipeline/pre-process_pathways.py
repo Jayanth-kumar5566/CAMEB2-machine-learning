@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 import pickle 
 
-df=pandas.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/MASTER-TABLES/HUMANN2/humann2_unipathway_pathabundance_relab.tsv",sep='\t',index_col=0)
+df=pandas.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/MASTER-TABLES/HUMANN2/humann2_unipathway_pathabundance.tsv",sep='\t',index_col=0)
 pathways=[i.find("|")==-1 for i in df.index]
 df=df.loc[pathways,:]
 
@@ -14,9 +14,15 @@ df.columns=[i.split("_")[0] for i in df.columns]
 df.drop(["13LTBlank","76LTBlank","Blank"],axis=1,inplace=True)
 df.drop(["UNMAPPED","UNINTEGRATED"],axis=0,inplace=True)
 
-df=(df.div(df.sum(axis=0),axis=1))*100
+super_pathways=[]
+for i in df.index:
+    if i.split(";")[0][-1]!=".":
+        super_pathways.append(i.split(";")[0])
+    else:
+        super_pathways.append(i.split(";")[0][:-1])
 
-df["Super_pathway"]=[i.split(";")[0] for i in df.index]
+df["Super_pathway"]=super_pathways
+        
 df=df.groupby("Super_pathway")
 df=df.sum()
 
