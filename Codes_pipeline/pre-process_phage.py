@@ -41,7 +41,7 @@ y=y.replace({"NonEx":0,"Exacerbator":0,"FreqEx":1})
 train=df_norm.reindex(y.index)
 
 train=pandas.merge(y["ExacerbatorState"],train,left_index=True,right_index=True)
-
+'''
 #Create a dictionary
 dic_=dict()
 for i in range(len(train.columns)):
@@ -52,5 +52,5 @@ train.columns=dic_.keys()
 file_pi = open('/home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Datasets/V_index_dict_.obj', 'wb') 
 pickle.dump(dic_, file_pi)
 file_pi.close()
-
+'''
 train.to_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Datasets/V.csv",sep='\t')
