@@ -11,7 +11,9 @@ y2=pandas.read_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_test.
 
 
 #data_normalisation - rel abund
-df_norm=(df.div(df.sum(axis=1),axis=0))*100
+df_norm=clr(df+1)
+df_norm=pandas.DataFrame(df_norm,index=df.index,columns=df.columns)
+
 #df_norm=df
 #Select extremeties 
 

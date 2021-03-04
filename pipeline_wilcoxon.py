@@ -10,7 +10,7 @@ args=sys.argv
 
 '''
 Run as:
-	./pipeline.py dataset alpha dimension_reduction ml_algo param_dimred param_ml
+	./pipeline_wilcoxon.py dataset alpha dimension_reduction ml_algo param_dimred param_ml
 
 dataset:
 	I   - clinical attributes
@@ -81,5 +81,5 @@ data.to_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Re
 
 #=============Part 3============================
 #Machine Learning part
-os.system("./machine_learning.py /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv /home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_194.csv /home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_test.csv "+args[3]+" "+args[4]+" "+args[5]+" "+args[6]+" /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Machine_Learning/")
+os.system("./Codes_pipeline/machine_learning.py /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv /home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_194.csv /home/jayanth/OneDrive/21.ML_Bronch/Data/METADATA/data_test.csv "+args[3]+" "+args[4]+" "+args[5]+" "+args[6]+" /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Machine_Learning/")
 

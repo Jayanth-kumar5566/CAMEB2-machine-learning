@@ -20,6 +20,18 @@ param_ml			: parameters for ML algorithm
 out					: output directory
 '''
 
+def plot_pca(pca,out):
+    y=pca.explained_variance_ratio_
+    x= ["C"+str(i) for i in range(1,len(y)+1)]
+    plt.bar(x,y)
+    plt.ylabel("Explained Variance ratio")
+    plt.savefig(out+"explained_variance.png",dpi=600)
+    plt.close()
+    y_cum=np.cumsum(y)
+    plt.plot(y_cum)
+    plt.ylabel("Cumulative Explained Variance")
+    plt.savefig(out+"Cumulative_exp_variance.png",dpi=600)
+    
 def rp(X_train,X_test,ep):
     # GRP
     rf = GaussianRandomProjection(eps=ep)
@@ -30,7 +42,7 @@ def rp(X_train,X_test,ep):
     return(X_train,X_test)  
     
     
-def pca(X_train,X_test,ratio=0.99):
+def pca(X_train,X_test,ratio,out):
     pca = PCA()
     pca.fit(X_train)
     n_comp = 0
@@ -42,6 +54,7 @@ def pca(X_train,X_test,ratio=0.99):
             break
     pca = PCA(n_components=n_comp)
     pca.fit(X_train)
+    plot_pca(pca,out)
     X_train = pca.transform(X_train)
     X_test = pca.transform(X_test)
     return(X_train,X_test)
@@ -83,7 +96,7 @@ def saveLossProgress(history,out):
             plt.ylabel('loss')
             plt.xlabel('epoch')
             plt.legend(['train loss', 'val loss', 'recon_loss', 'val recon_loss', 'kl_loss', 'val kl_loss'], loc='upper right')
-            plt.savefig('out'+figureName + '.png')
+            plt.savefig(str(out)+figureName + '.png')
             plt.close()
 
 def vae(X_train,y_train,X_test,dims = [14], epochs=2000, batch_size=1, verbose=2, loss='mse', output_act=False, act='relu', patience=25, beta=1.0, warmup=True, warmup_rate=0.01, val_rate=0.2, no_trn=False,seed=0):
@@ -202,9 +215,9 @@ X_test=scaler.transform(X_test)
 if args[4]=="none":
 	X_train_d,X_test_d=X_train,X_test	
 elif args[4]=="pca":
-	X_train_d,X_test_d = pca(X_train,X_test,ratio=args[6])
+	X_train_d,X_test_d = pca(X_train,X_test,ratio=float(args[6]),out=args[8])
 elif args[4]=="rp":
-	X_train_d,X_test_d = rp(X_train,X_test,ep=args[6])
+	X_train_d,X_test_d = rp(X_train,X_test,ep=float(args[6]))
 elif args[4]=="vae":
 	X_train_d,X_test_d,history= vae(X_train,y_train,X_test,dims=[int(i) for i in args[6].split(",")])
 	saveLossProgress(history,args[8])
@@ -240,3 +253,9 @@ results = clf.cv_results_
 df=pd.DataFrame(results)
 df_sel=df.loc[:,["params","mean_train_Acc","mean_train_F1","mean_train_F2","mean_test_Acc","mean_test_F1","mean_test_F2"]]
 df_sel.to_csv(str(args[8])+"params_acc.csv")
+#print params of the maximum mean_test_F2
+m_ind=df_sel["mean_test_F2"].idxmax()
+print("Best params based on mean test F2 score")
+print(df_sel.loc[m_ind,"params"])
+print("Maximum F2 score")
+print(df_sel.loc[m_ind,["mean_train_Acc","mean_train_F1","mean_train_F2","mean_test_Acc","mean_test_F1","mean_test_F2"]])

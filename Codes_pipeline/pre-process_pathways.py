@@ -33,9 +33,10 @@ df_norm=(df.div(df.sum(axis=1),axis=0))*100
 #Filtering
 ind=(df_norm>0)
 f_ind=(ind.sum(axis=0)>=13) #5% of the population 
-df_norm=df_norm.loc[:,f_ind]
 
-df_norm=(df_norm.div(df_norm.sum(axis=1),axis=0))*100
+df_sel=df.loc[:,f_ind]
+df_norm=clr(df_sel+1)
+df_norm=pandas.DataFrame(df_norm,index=df_sel.index,columns=df_sel.columns)
 
 ##Merge Train and test
 
