@@ -145,6 +145,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
+import pickle
 
 # importing sklearn
 from sklearn.model_selection import train_test_split
@@ -191,7 +192,7 @@ import DNN_models
 import exception_handle
 
 args=sys.argv
-
+print(args)
 #importing the dataset
 data=pd.read_csv(args[1],index_col=0)
 y_train=pd.read_csv(args[2],index_col=0)
@@ -200,8 +201,8 @@ y_test=pd.read_csv(args[3],index_col=0)
 #Splitting train test
 X_train=data.reindex(y_train.index)
 X_test=data.reindex(y_test.index)
-scaler = StandardScaler()
-scaler.fit(data)
+scaler = StandardScaler() #with_std=False (try) -- no need bcz feature selection only selects important or discriminatory features
+scaler.fit(data) #only fit on training data - not on testing
 y_train=y_train["ExacerbatorState"]
 y_train=y_train.replace({"NonEx":0,"Exacerbator":0,"FreqEx":1})
 y_test=y_test["ExacerbatorState"]
@@ -227,14 +228,18 @@ else:
 print("Dimension reduction --- Completed")
 print(X_train_d.shape)
 
+fileObj = open(str(args[8])+'dim_red_data.obj', 'wb')
+pickle.dump([X_train_d,X_test_d,y_train,y_test],fileObj)
+fileObj.close()
+
 #Machine learning
 scoring={"Acc":make_scorer(balanced_accuracy_score),"F1":make_scorer(f1_score),"F2":make_scorer(fbeta_score,beta=2)}    
 if args[5]=="rf":
 	hyper_parameters = [{'n_estimators': [150],'criterion':['gini'],
 		                    'max_features': ['auto'],
 		                    'max_depth':[None],
-		                    'min_samples_split':[i for i in np.linspace(0.001,0.5,50)],
-		                    'min_samples_leaf':[i for i in np.linspace(0.001,0.5,50)],
+		                    'min_samples_split':[i for i in np.linspace(0.001,0.5,20)],
+		                    'min_samples_leaf':[i for i in np.linspace(0.001,0.5,20)],
 		                    }, ]
 	clf = GridSearchCV(RandomForestClassifier(class_weight="balanced",bootstrap=True), hyper_parameters, cv=RepeatedStratifiedKFold(n_splits=5, n_repeats=10), scoring=scoring, n_jobs=-1, verbose=1,refit=False,return_train_score=True)
 	
@@ -242,7 +247,8 @@ elif args[5]=="logit":
 	# define models and parameters
 	solvers = ['liblinear']
 	penalty = ['l1']
-	c_values = [1000,100, 10, 1.0, 0.1, 0.01,0.001] 
+#	c_values = [1000,100, 10, 1.0, 0.1, 0.01,0.001]
+	c_values=[i for i in np.linspace(1,0.01,100)] 
 	# define grid search
 	grid = dict(solver=solvers,penalty=penalty,C=c_values)
 	model = LogisticRegression(fit_intercept=True,class_weight="balanced")

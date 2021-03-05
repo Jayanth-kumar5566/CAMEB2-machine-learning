@@ -1,0 +1,106 @@
+['/home/CAMEB2-machine-learning/Codes_pipeline/machine_learning.py', '/home/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv', '/home/METADATA/data_194.csv', '/home/METADATA/data_test.csv', 'none', 'logit', 'none', 'none', '/home/CAMEB2-machine-learning/Results/Machine_Learning/']
+Dimension reduction --- Completed
+(194, 22)
+Best params based on mean test F2 score
+{'C': 0.1, 'penalty': 'l1', 'solver': 'liblinear'}
+Maximum F2 score
+mean_train_Acc    0.611878
+mean_train_F1     0.428058
+mean_train_F2     0.518124
+mean_test_Acc     0.536742
+mean_test_F1      0.348786
+mean_test_F2      0.420733
+Name: 4, dtype: object
+['machine_learning.py', './final_data.csv', './data_194.csv', './data_test.csv', 'none', 'rf', 'none', 'none', './2/']
+Dimension reduction --- Completed
+(194, 22)
+Fitting 50 folds for each of 2500 candidates, totalling 125000 fits
+Best params based on mean test F2 score
+{'criterion': 'gini', 'max_depth': None, 'max_features': 'auto', 'min_samples_leaf': 0.2759591836734694, 'min_samples_split': 0.23522448979591837, 'n_estimators': 150}
+Maximum F2 score
+mean_train_Acc    0.633019
+mean_train_F1     0.449859
+mean_train_F2     0.539108
+mean_test_Acc     0.580257
+mean_test_F1      0.390693
+mean_test_F2      0.464263
+Name: 1373, dtype: object
+['machine_learning.py', './final_data.csv', './data_194.csv', './data_test.csv', 'pca', 'logit', '0.9', 'none', './3/']
+Dimension reduction --- Completed
+(194, 13)
+Best params based on mean test F2 score
+{'C': 0.1, 'penalty': 'l1', 'solver': 'liblinear'}
+Maximum F2 score
+mean_train_Acc    0.597802
+mean_train_F1     0.416573
+mean_train_F2     0.523823
+mean_test_Acc     0.566812
+mean_test_F1      0.385415
+mean_test_F2      0.485309
+Name: 4, dtype: object
+['machine_learning.py', './final_data.csv', './data_194.csv', './data_test.csv', 'pca', 'rf', '0.9', 'none', './4/']
+Dimension reduction --- Completed
+(194, 13)
+Fitting 50 folds for each of 2500 candidates, totalling 125000 fits
+Best params based on mean test F2 score
+{'criterion': 'gini', 'max_depth': None, 'max_features': 'auto', 'min_samples_leaf': 0.30651020408163265, 'min_samples_split': 0.459265306122449, 'n_estimators': 150}
+Maximum F2 score
+mean_train_Acc    0.642131
+mean_train_F1     0.456227
+mean_train_F2     0.506309
+mean_test_Acc     0.508039
+mean_test_F1      0.282808
+mean_test_F2      0.309338
+Name: 1545, dtype: object
+['/home/CAMEB2-machine-learning/Codes_pipeline/machine_learning.py', '/home/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv', '/home/METADATA/data_194.csv', '/home/METADATA/data_test.csv', 'pca', 'logit', '0.9', 'none', '/home/CAMEB2-machine-learning/Results/Machine_Learning/']
+Dimension reduction --- Completed
+(194, 13)
+Best params based on mean test F2 score
+{'C': 0.06999999999999995, 'penalty': 'l1', 'solver': 'liblinear'}
+Maximum F2 score
+mean_train_Acc    0.596534
+mean_train_F1     0.416138
+mean_train_F2     0.528171
+mean_test_Acc     0.588021
+mean_test_F1      0.405261
+mean_test_F2      0.514552
+Name: 93, dtype: object
+['/home/CAMEB2-machine-learning/Codes_pipeline/machine_learning.py', '/home/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv', '/home/METADATA/data_194.csv', '/home/METADATA/data_test.csv', 'pca', 'logit', '0.9', 'none', '/home/CAMEB2-machine-learning/Results/Machine_Learning/']
+Dimension reduction --- Completed
+(194, 13)
+Best params based on mean test F2 score
+{'C': 0.04999999999999993, 'penalty': 'l1', 'solver': 'liblinear'}
+Maximum F2 score
+mean_train_Acc    0.599739
+mean_train_F1     0.419392
+mean_train_F2     0.533601
+mean_test_Acc     0.599659
+mean_test_F1      0.416426
+mean_test_F2      0.530388
+Name: 95, dtype: object
+['/home/CAMEB2-machine-learning/Codes_pipeline/machine_learning.py', '/home/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv', '/home/METADATA/data_194.csv', '/home/METADATA/data_test.csv', 'pca', 'logit', '0.9', 'none', '/home/CAMEB2-machine-learning/Results/Machine_Learning/']
+Dimension reduction --- Completed
+(194, 13)
+Best params based on mean test F2 score
+{'C': 0.04999999999999993, 'penalty': 'l1', 'solver': 'liblinear'}
+Maximum F2 score
+mean_train_Acc    0.599805
+mean_train_F1     0.419541
+mean_train_F2     0.533739
+mean_test_Acc     0.600536
+mean_test_F1        0.4187
+mean_test_F2      0.532246
+Name: 95, dtype: object
+['/home/CAMEB2-machine-learning/Codes_pipeline/machine_learning.py', '/home/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv', '/home/METADATA/data_194.csv', '/home/METADATA/data_test.csv', 'pca', 'logit', '0.9', 'none', '/home/CAMEB2-machine-learning/Results/Machine_Learning/']
+Dimension reduction --- Completed
+(194, 13)
+Best params based on mean test F2 score
+{'C': 0.05999999999999994, 'penalty': 'l1', 'solver': 'liblinear'}
+Maximum F2 score
+mean_train_Acc    0.598836
+mean_train_F1     0.418553
+mean_train_F2     0.532186
+mean_test_Acc     0.598691
+mean_test_F1      0.417566
+mean_test_F2      0.530133
+Name: 94, dtype: object
