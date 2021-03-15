@@ -16,7 +16,7 @@ for i in lines:
 	y=i.split('\t')[3]
 	if y!= "":
 		x=(i.split('\t')[0])
-#		x=x.replace("_"," ")
+		x=x.replace("_"," ")
 		g=i.split('\t')[2]
 		out.write(str(x)+","+str(y)+","+str(g)+'\n')
 
