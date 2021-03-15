@@ -81,5 +81,5 @@ data.to_csv("/home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Re
 
 #=============Part 3============================
 #Machine Learning part
-os.system("sudo docker exec ed514c558732 /home/CAMEB2-machine-learning/Codes_pipeline/machine_learning.py /home/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv /home/METADATA/data_194.csv /home/METADATA/data_test.csv "+args[3]+" "+args[4]+" "+args[5]+" "+args[6]+" /home/CAMEB2-machine-learning/Results/Machine_Learning/ >> ./Results/out_res.txt")
+os.system("sudo docker exec ed514c558732 /home/CAMEB2-machine-learning/Codes_pipeline/machine_learning.py /home/CAMEB2-machine-learning/Results/Feature_Selection/final_data.csv /home/METADATA/data_194.csv /home/METADATA/data_test.csv "+args[3]+" "+args[4]+" "+args[5]+" "+args[6]+" /home/CAMEB2-machine-learning/Results/Machine_Learning/ >> ./Results/out_res"+str(args[1])+".txt")
 
