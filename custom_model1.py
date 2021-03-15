@@ -262,9 +262,13 @@ def vae(X_train,y_train,X_test,dims = [14], epochs=2000, batch_size=1, verbose=2
         X_test_m, _, X_test = encoder.predict(X_test) #mean, variance,sample
         return(X_train_m,X_test_m,history)
 
+X_train_d=scaler.transform(X_train_d)
+X_test_d=scaler.transform(X_test_d)
+
 #Dimensionality reduction
+
 '''
-D_X_train_d,D_X_test_d,history= vae(X_train_d,y_train,X_test_d,dims=[80,20])
+D_X_train_d,D_X_test_d,history= vae(X_train_d,y_train,X_test_d,dims=[20])
 saveLossProgress(history)
 '''
 #D_X_train_d,D_X_test_d=X_train_d,X_test_d
@@ -405,7 +409,7 @@ print("F Score in weighted fashion ",f1_score(y_test,y_pred,average="weighted"))
 x=[]
 imp=0
 for i in range(100):
-    rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=0.2250408163265306,max_depth=None,min_samples_leaf=0.24540816326530612,class_weight="balanced",bootstrap=True)
+    rf=RandomForestClassifier(n_jobs=-1, n_estimators=150,min_samples_split=0.001,max_depth=None,min_samples_leaf=0.31669,class_weight="balanced",bootstrap=True)
     rf.fit(D_X_train_d, y_train)
     imp=imp+rf.feature_importances_
     y_pred=rf.predict(D_X_test_d)
@@ -413,5 +417,5 @@ for i in range(100):
     x.append(rf.score(D_X_test_d,y_test))
 
 print("Median of testing acc",np.median(x))
-f_imp=pd.DataFrame([i for i in zip(X_train_d,imp)],columns=["Features","Importance"])
+f_imp=pd.DataFrame([i for i in zip(D_X_train_d,imp)],columns=["Features","Importance"])
 f_imp.to_csv("feature_importances.csv")
