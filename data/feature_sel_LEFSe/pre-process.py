@@ -4,14 +4,15 @@ from scipy.stats import mannwhitneyu
 from scipy.stats import kruskal
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-df=pandas.read_csv("./../../../Data_21Dec20/species_data.csv",index_col=0)
+df=pandas.read_csv("./../../Network_analysis/edge_weights-across_patients.csv",index_col=0)
 
 y1=pandas.read_csv("./../../../METADATA/data_194.csv",index_col=0)
 y2=pandas.read_csv("./../../../METADATA/data_test.csv",index_col=0)
 
 
 #data_normalisation - rel abund
-df_norm=(df.div(df.sum(axis=1),axis=0))*100
+#df_norm=(df.div(df.sum(axis=1),axis=0))*100
+df_norm=df
 
 #Select extremeties 
 
