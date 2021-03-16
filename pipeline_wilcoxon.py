@@ -10,7 +10,7 @@ args=sys.argv
 
 '''
 Run as:
-	./pipeline_wilcoxon.py dataset alpha dimension_reduction ml_algo param_dimred param_ml
+	./pipeline_wilcoxon.py dataset alpha dimension_reduction ml_algo param_dimred param_ml corr_measure
 
 dataset:
 	I   - clinical attributes
@@ -18,6 +18,7 @@ dataset:
 	III - Microbial pathways (Unipathways)
 	IV  - Anti Microbial resistance (HUMMAN2)
 	V   - Bacteriophages contigs (Virome)
+	VI  - Microbial association network derived from II
 
 	Can also include I+II (or such combinations)	
 	
@@ -33,6 +34,9 @@ param_dimred		: parameters for dimension reduction algorthim seperated by ,
 	"vae"	- dimensions 80,20
 param_ml			: parameters for ML algorithm
 	"none"	- none  [all built in] #just incase
+corr_measure        : Correlation measure (implemented on CLR transformed dataset) that is to be used as an network inference algorithm in LIONESS framework
+    "spearman"  -  spearman correlation
+    "pearson"   -  pearson correlation
 '''
 #Dataset
 
@@ -61,6 +65,8 @@ def dataset(number,args):
 		os.system("python3 Codes_pipeline/pre-process_phage.py")
 		os.system("./Codes_pipeline/fet_sel.R /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Datasets/"+number+".csv /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/"+number+".csv "+args[2])		
 		return(None)
+	elif number=="VI":
+	    os.system("sudo docker exec 03cd5ab682c6 /home/CAMEB2-machine-learning/Codes_pipeline/single_patient_network.R "+args[7]+" /home/CAMEB2-machine-learning/Results/Datasets/VI.csv")
 	else:
 		sys.exit("Please check your input")
 		
