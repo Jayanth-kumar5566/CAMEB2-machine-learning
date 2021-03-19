@@ -7,7 +7,6 @@
 library(foreach)
 library(doParallel)
 library(abind)
-library("Hmisc")
 
 
 pearson<-function(data){
@@ -32,7 +31,8 @@ pearson<-function(data){
     
   boot_arr<-foreach(i=1:max_iter,.combine=acomb, .multicombine=TRUE) %dopar% {
     t_x=sample(rows,replace = TRUE)
-    res=rcor(data[t_x,],type="pearson")
+    library(Hmisc)
+    res=rcorr(data[t_x,],type="pearson")
     sim=res$r
     sim[res$P<0.05]<-0                         #Filter1      
     sim
@@ -55,7 +55,8 @@ pearson<-function(data){
   perm_arr<-foreach(i=1:max_iter,.combine=acomb, .multicombine=TRUE) %dopar% {
     x<-apply(data,2,FUN =sample) #permutation
     x<-(x/rowSums(x))*100#renormalization
-    res=rcor(x,type="pearson")
+    library(Hmisc)
+    res=rcorr(x,type="pearson")
     sim=res$r
     sim[res$P<0.05]<-0                         #Filter1      
     sim
@@ -87,7 +88,7 @@ pearson<-function(data){
   
   ind<-(p>0.001) #p-value is non-significant
   mean_sim[ind]<-0 #make those edges 0
-  sim[abs(sim)<0.3]<-0  #Filter 2
+  mean_sim[abs(mean_sim)<0.3]<-0  #Filter 2
   return(mean_sim)
 }
 

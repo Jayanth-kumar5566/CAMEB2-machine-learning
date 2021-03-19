@@ -247,8 +247,8 @@ elif args[5]=="logit":
 	# define models and parameters
 	solvers = ['liblinear']
 	penalty = ['l1']
-#	c_values = [1000,100, 10, 1.0, 0.1, 0.01,0.001]
-	c_values=[i for i in np.linspace(1,0.01,100)] 
+	c_values = [1000,100, 10, 1.0, 0.1, 0.01,0.001]
+#	c_values=[i for i in np.linspace(1,0.01,100)] 
 	# define grid search
 	grid = dict(solver=solvers,penalty=penalty,C=c_values)
 	model = LogisticRegression(fit_intercept=True,class_weight="balanced")

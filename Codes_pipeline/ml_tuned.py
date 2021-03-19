@@ -72,7 +72,7 @@ fileObj = open(str(args[1]), 'rb')
 fileObj.close()
 
 if args[2]=="logit":
-	model = LogisticRegression(fit_intercept=True,class_weight="balanced",solver="liblinear",penalty='l1',C=0.5, n_jobs=-1)
+	model = LogisticRegression(fit_intercept=True,class_weight="balanced",solver="liblinear",penalty='l1',C=0.06, n_jobs=-1)
 	model.fit(X_train_d, y_train)
 	print("Training Acc",model.score(X_train_d,y_train))
 	test_score=model.score(X_test_d,y_test)
@@ -82,6 +82,8 @@ if args[2]=="logit":
 	print("F1 Score ",f1_score(y_test,y_pred))
 	print("F2 Score ",fbeta_score(y_test,y_pred,beta=2))
 	print("Balanced Accuracy ",balanced_accuracy_score(y_test,y_pred))
+	
+	
 
 
 
