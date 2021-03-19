@@ -16,7 +16,7 @@ y2=read.csv("/home/METADATA/data_test.csv",row.names=1)
 df=df/rowSums(df)
 
 y=rbind.data.frame(y1,y2)
-y$ExacerbatorState<-factor(ifelse(y$Exacerbations<=3,0,1))
+y$ExacerbatorState<-factor(ifelse(y$Exacerbations<3,0,1))
   
 data=df[row.names(y),]
 
@@ -28,6 +28,10 @@ data<-t(data)
 source("/home/CAMEB2-machine-learning/Codes_pipeline/spearman.R")
 source("/home/CAMEB2-machine-learning/Codes_pipeline/pearson.R")
 
+#====Filtering
+# ind<-(rowSums(data>0)<5)
+# data<-data[-ind,]
+# rm(ind)
 
 if (args[1]=="spearman"){
 res<-lioness(as.matrix(data),spearman)

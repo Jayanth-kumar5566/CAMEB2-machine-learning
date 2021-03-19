@@ -67,6 +67,7 @@ def dataset(number,args):
 		return(None)
 	elif number=="VI":
 	    os.system("sudo docker exec 03cd5ab682c6 /home/CAMEB2-machine-learning/Codes_pipeline/single_patient_network.R "+args[7]+" /home/CAMEB2-machine-learning/Results/Datasets/VI.csv")
+	    os.system("./Codes_pipeline/fet_sel_networks.R /home/jayanth/OneDrive/21.ML_Bronch/Data/CAMEB2-machine-learning/Results/Feature_Selection/"+number+".csv "+args[2])
 	else:
 		sys.exit("Please check your input")
 		

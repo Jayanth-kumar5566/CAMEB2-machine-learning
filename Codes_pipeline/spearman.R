@@ -1,11 +1,17 @@
+#Modification replace cor with cor.test  -- Filter 1
+#Drop low correlation values -- Filter 2
+
+
 #Reading the dataset
 # data=read.csv("./Microbes.csv",row.names = 1)
 library(foreach)
 library(doParallel)
 library(abind)
+library("Hmisc")
+
 
 spearman<-function(data){
-  data<-t(data)
+  data<-t(data)*100 #for numerical stability
   # print("started")
 
     #Bootstrap
@@ -26,13 +32,15 @@ spearman<-function(data){
     
   boot_arr<-foreach(i=1:max_iter,.combine=acomb, .multicombine=TRUE) %dopar% {
     t_x=sample(rows,replace = TRUE)
-    sim=cor(data[t_x,],method="spearman")
+    res=rcor(data[t_x,],type="spearman")
+    sim=res$r
+    sim[res$P<0.05]<-0                         #Filter1      
     sim
     }
 
   # mean_sim<-apply(boot_arr, c(1,2), mean,na.rm=TRUE) #mean of bootstrap values
   
-  mean_sim<-parApply(cl,boot_arr, c(1,2), mean,na.rm=TRUE)
+  mean_sim<-parApply(cl,boot_arr, c(1,2), median,na.rm=TRUE)
   
   #perm and renorm
   # max_iter=100
@@ -46,8 +54,10 @@ spearman<-function(data){
   
   perm_arr<-foreach(i=1:max_iter,.combine=acomb, .multicombine=TRUE) %dopar% {
     x<-apply(data,2,FUN =sample) #permutation
-    x<-x/rowSums(x)#renormalization
-    sim=cor(x,method="spearman")
+    x<-(x/rowSums(x))*100#renormalization
+    res=rcor(x,type="spearman")
+    sim=res$r
+    sim[res$P<0.05]<-0                         #Filter1      
     sim
   }
   
@@ -58,6 +68,10 @@ spearman<-function(data){
   #     p_val[i,j]<-t$p.value
   #   }
   # }
+  
+  #Converting NA to 0
+  boot_arr[is.na(boot_arr)]<-0
+  perm_arr[is.na(perm_arr)]<-0
   
   p_val <- foreach(i=1:dim(data)[2], .combine='rbind') %:%
     foreach(j=1:dim(data)[2], .combine='c') %dopar% {
@@ -73,6 +87,7 @@ spearman<-function(data){
   
   ind<-(p>0.001) #p-value is non-significant
   mean_sim[ind]<-0 #make those edges 0
+  sim[abs(sim)<0.3]<-0  #Filter 2
   return(mean_sim)
 }
 
