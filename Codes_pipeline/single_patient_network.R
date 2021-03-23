@@ -13,7 +13,7 @@ df=read.csv("/home/Data_21Dec20/species_data.csv",row.names =1)
 y1=read.csv("/home/METADATA/data_194.csv",row.names=1)
 y2=read.csv("/home/METADATA/data_test.csv",row.names=1)
 
-df=df/rowSums(df)
+# df=df/rowSums(df)
 
 y=rbind.data.frame(y1,y2)
 y$ExacerbatorState<-factor(ifelse(y$Exacerbations<3,0,1))
@@ -27,6 +27,7 @@ data<-t(data)
 
 source("/home/CAMEB2-machine-learning/Codes_pipeline/spearman.R")
 source("/home/CAMEB2-machine-learning/Codes_pipeline/pearson.R")
+source("/home/CAMEB2-machine-learning/Codes_pipeline/speic-easi.R")
 
 #====Filtering
 # ind<-(rowSums(data>0)<5)
@@ -37,6 +38,8 @@ if (args[1]=="spearman"){
 res<-lioness(as.matrix(data),spearman)
 } else if (args[1]=="pearson"){
   res<-lioness(as.matrix(data),pearson)
+} else if (args[1]=="speic-easi"){
+  res<-lioness(as.matrix(data),spe)
 }
 
 print(dim(assay(res)))
